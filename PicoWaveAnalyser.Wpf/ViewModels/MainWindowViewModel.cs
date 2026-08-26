@@ -4,7 +4,7 @@ using PicoWaveAnalyser.Application.Services.Analyses;
 using PicoWaveAnalyser.Application.Services.Dialogs;
 using PicoWaveAnalyser.Application.Services.IO;
 using PicoWaveAnalyser.Domain;
-using PicoWaveAnalyser.Wpf.Services;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.IO;
 
@@ -12,102 +12,148 @@ namespace PicoWaveAnalyser.Wpf.ViewModels;
 
 public sealed partial class MainWindowViewModel : ObservableObject
 {
-    private readonly BrowserDialog browserDialog = new();
-    private readonly IDialogMessageService dialogMessageService = new DialogMessageService();
-    private readonly WaveformReader _reader = new();
-    private readonly FrequencyAnalyser _analyser = new(new FourierTransformer());
-    private readonly ResultWriter _writer = new();
+    #region Services
+    private readonly IBrowserDialog BrowserDialog;
+    private readonly IDialogMessageService DialogMessageService;
+    private readonly WaveformReader Reader;
+    private readonly FrequencyAnalyser Analyser;
+    private readonly ResultWriter Writer;
+    #endregion
 
+    private CancellationTokenSource? _analysisCts;
+
+    #region Properties
+    [ObservableProperty] private bool isAnalysing = false;
     [ObservableProperty] private string folderPath = string.Empty;
     [ObservableProperty] private string status = "Choose the folder containing the waveform CSV files.";
-    [ObservableProperty] private double progress;
+    #endregion
 
     public ObservableCollection<FrequencyResult> Results { get; } = [];
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(IBrowserDialog browserDialog, IDialogMessageService dialogMessageService, WaveformReader reader, FrequencyAnalyser analyser, ResultWriter writer)
     {
+        BrowserDialog = browserDialog;
+        DialogMessageService = dialogMessageService;
+        Reader = reader;
+        Analyser = analyser;
+        Writer = writer;
+    }
+
+    private bool CanCancelAnalysis() => IsAnalysing;
+    private bool CanExportAnalysis() => Results.Count > 0;
+    private bool CanAnalysis() => !string.IsNullOrWhiteSpace(FolderPath);
+
+    partial void OnIsAnalysingChanged(bool value)
+    {
+        CancelAnalysisCommand.NotifyCanExecuteChanged();
+        ExportCommand.NotifyCanExecuteChanged();
     }
 
     [RelayCommand]
     private async Task BrowseAsync()
     {
-        FolderPath = await browserDialog.BrowseAsync("Select waveform folder");
+        FolderPath = await BrowserDialog.BrowseAsync("Select waveform folder");
+        AnalyseCommand.NotifyCanExecuteChanged();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanAnalysis))]
     private async Task AnalyseAsync()
     {
         try
         {
             if (string.IsNullOrWhiteSpace(FolderPath))
             {
-                await dialogMessageService.DisplayErrorAsync("Please choose a folder containing csv wave files", "Forgot something?");
+                await DialogMessageService.DisplayErrorAsync("Please choose a folder containing csv wave files", "Forgot something?");
                 return;
             }
 
             Results.Clear();
 
-            Progress = 0;
+            IsAnalysing = true;
 
             string[] files = Directory.GetFiles(FolderPath, "*.csv", SearchOption.TopDirectoryOnly);
 
             if (files.Length == 0)
             {
-                Status = "No CSV files found.";
-                return;
+                throw new Exception("No CSV files found.");
             }
 
-            List<FrequencyResult> calculated = new List<FrequencyResult>(files.Length);
+            ConcurrentBag<FrequencyResult> calculated = new();
 
-            for (int i = 0; i < files.Length; i++)
+            int completed = 0;
+
+            _analysisCts = new CancellationTokenSource();
+
+            ParallelOptions options = new()
             {
-                string file = files[i];
-                Status = $"Analysing {Path.GetFileName(file)} ({i + 1}/{files.Length})...";
-                Waveform waveform = await _reader.ReadAsync(file);
+                MaxDegreeOfParallelism = Environment.ProcessorCount,
+                CancellationToken = _analysisCts.Token
+            };
 
-                // FFT work is CPU-bound; move it off the UI thread so the window stays responsive.
-                double frequency = await Task.Run(() => _analyser.FindDominantFrequency(waveform));
+            await Parallel.ForEachAsync(files, options, async (file, cancellationToken) =>
+            {
+                Waveform waveform = await Reader.ReadAsync(file, cancellationToken);
+
+                double frequency = Analyser.FindDominantFrequency(waveform);
+
                 calculated.Add(new FrequencyResult(Path.GetFileName(file), frequency));
-                Progress = (i + 1) * 100.0 / files.Length;
-            }
 
-            foreach (FrequencyResult? result in calculated.OrderBy(x => x.FrequencyHz))
+                int current = Interlocked.Increment(ref completed);
+            });
+
+            foreach (FrequencyResult result in calculated.OrderBy(wave => wave.FrequencyHz))
             {
                 Results.Add(result);
             }
 
             Status = $"Completed. {Results.Count} waveform files analysed.";
         }
+        catch (OperationCanceledException)
+        {
+            Status = "Analysis cancelled.";
+        }
         catch (Exception ex)
         {
             Status = "Analysis failed.";
-            await dialogMessageService.DisplayErrorAsync(ex.Message, "Analysis error");
+            await DialogMessageService.DisplayErrorAsync(ex.Message, "Analysis error");
+        }
+        finally
+        {
+            _analysisCts?.Dispose();
+            _analysisCts = null;
+            IsAnalysing = false;
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanCancelAnalysis))]
+    private void CancelAnalysis()
+    {
+        _analysisCts?.Cancel();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanExportAnalysis))]
     private async Task ExportAsync()
     {
         if (Results.Count == 0)
         {
-            await dialogMessageService.DisplayErrorAsync("You did not run any analyses", "Export error");
+            await DialogMessageService.DisplayErrorAsync("You did not run any analyses", "Export error");
             return;
         }
 
-        string fileName = await browserDialog.OpenSaveDialog("CSV files (*.csv)|*.csv", "waveform-frequencies.csv", ".csv");
+        string fileName = await BrowserDialog.OpenSaveDialog("CSV files (*.csv)|*.csv", "waveform-frequencies.csv", ".csv");
 
         if (string.IsNullOrEmpty(fileName))
             return;
 
         try
         {
-            await _writer.WriteAsync(fileName, Results);
+            await Writer.WriteAsync(fileName, Results);
             Status = $"Results exported to {fileName}";
-            await dialogMessageService.DisplaySuccessAsync(Status, "Done!");
+            await DialogMessageService.DisplaySuccessAsync(Status, "Done!");
         }
         catch (Exception ex)
         {
-            await dialogMessageService.DisplayErrorAsync(ex.Message, "Export error");
+            await DialogMessageService.DisplayErrorAsync(ex.Message, "Export error");
         }
     }
 }

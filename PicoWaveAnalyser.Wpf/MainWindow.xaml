@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PicoWaveAnalyser.Wpf"
+        xmlns:converters="clr-namespace:PicoWaveAnalyser.Wpf.Converters"
         xmlns:vm="clr-namespace:PicoWaveAnalyser.Wpf.ViewModels"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
         mc:Ignorable="d"
@@ -11,6 +12,15 @@
         Height="600" Width="900"
         MinHeight="450" MinWidth="700">
 
+    <Window.Resources>
+        <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
+
+        <Style TargetType="Button">
+            <Setter Property="Padding"  Value="18,7"/>
+        </Style>
+        
+    </Window.Resources>
+    
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -25,15 +35,17 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
+            
             <TextBlock Text="Waveform folder:" VerticalAlignment="Center" Margin="0,0,10,0"/>
             <TextBox Grid.Column="1" Text="{Binding FolderPath}" IsReadOnly="True" Padding="6"/>
-            <Button Grid.Column="2" Content="Browse..." Command="{Binding BrowseCommand}" Padding="14,6" Margin="10,0,0,0"/>
+            <Button Grid.Column="2" Content="Browse..." IsEnabled="{Binding IsAnalysing, Converter={StaticResource InvertBooleanConverter}}" Command="{Binding BrowseCommand}" Margin="10,0,0,0"/>
         </Grid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,15,0,15">
-            <Button Content="Analyse" Command="{Binding AnalyseCommand}" Padding="18,7"/>
-            <Button Content="Export CSV" Command="{Binding ExportCommand}" Padding="18,7" Margin="10,0,0,0"/>
-            <TextBlock Text="{Binding Status}" VerticalAlignment="Center" Margin="16,0,0,0"/>
+            <Button Content="Analyse" Command="{Binding AnalyseCommand}"/>
+            <Button Content="Cancel" Command="{Binding CancelAnalysisCommand}" Margin="10,0,0,0"/>
+            <Button Content="Export CSV" Command="{Binding ExportCommand}" Margin="10,0,0,0"/>
+            <TextBlock Text="{Binding Status}" VerticalAlignment="Center" Margin="10,0,0,0"/>
         </StackPanel>
 
         <DataGrid Grid.Row="2" ItemsSource="{Binding Results}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False">
@@ -43,6 +55,6 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <ProgressBar Grid.Row="3" Height="6" Margin="0,12,0,0" Minimum="0" Maximum="100" Value="{Binding Progress}"/>
+        <ProgressBar Grid.Row="3" Height="6" Margin="0,12,0,0" IsIndeterminate="{Binding IsAnalysing}"/>
     </Grid>
 </Window>

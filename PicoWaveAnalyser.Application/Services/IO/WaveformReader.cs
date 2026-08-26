@@ -12,6 +12,7 @@ public sealed class WaveformReader
 
         using StreamReader reader = new StreamReader(path);
 
+        // Skip CSV header.
         _ = await reader.ReadLineAsync(cancellationToken);
 
         while (await reader.ReadLineAsync(cancellationToken) is { } line)

@@ -8,27 +8,29 @@ internal sealed class BrowserDialog : IBrowserDialog
 {
     public Task<string> BrowseAsync(string description)
     {
-        using FolderBrowserDialog dialog = new Forms.FolderBrowserDialog { Description = description };
+        using FolderBrowserDialog dialog = new Forms.FolderBrowserDialog 
+        { 
+            Description = description,
+            SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+        };
 
-        if (dialog.ShowDialog() == Forms.DialogResult.OK)
-        {
-            return Task.FromResult(dialog.SelectedPath);
-        }
+        string selectedPath = dialog.ShowDialog() == DialogResult.OK ? dialog.SelectedPath : string.Empty;
 
-        return Task.FromResult(string.Empty);
+        return Task.FromResult(selectedPath);
     }
 
     public Task<string> OpenSaveDialog(string filter, string fileName, string defaultExt) 
     {
         SaveFileDialog dialog = new SaveFileDialog
         {
-            Filter = "CSV files (*.csv)|*.csv",
-            FileName = "waveform-frequencies.csv",
-            DefaultExt = ".csv"
+            Filter = filter,
+            FileName = fileName,
+            DefaultExt = defaultExt,
+            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
         };
 
-        if (dialog.ShowDialog() != true) return Task.FromResult(string.Empty);
+        string selectedPath = dialog.ShowDialog() == true ? dialog.FileName : string.Empty;
 
-        return Task.FromResult(dialog.FileName);
+        return Task.FromResult(selectedPath);
     }
 }

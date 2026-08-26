@@ -1,6 +1,20 @@
 <Solution>
-  <Project Path="PicoWaveAnalyser.Application/PicoWaveAnalyser.Application.csproj" />
-  <Project Path="PicoWaveAnalyser.Domain/PicoWaveAnalyser.Domain.csproj" />
-  <Project Path="PicoWaveAnalyser.Tests/PicoWaveAnalyser.Tests.csproj" />
-  <Project Path="PicoWaveAnalyser.Wpf/PicoWaveAnalyser.Wpf.csproj" />
+  <Folder Name="/1_Domain/">
+    <Project Path="PicoWaveAnalyser.Domain/PicoWaveAnalyser.Domain.csproj" />
+  </Folder>
+  <Folder Name="/2_Application/">
+    <Project Path="PicoWaveAnalyser.Application/PicoWaveAnalyser.Application.csproj" />
+  </Folder>
+  <Folder Name="/3_Wpf/">
+    <Project Path="PicoWaveAnalyser.Wpf/PicoWaveAnalyser.Wpf.csproj" />
+  </Folder>
+  <Folder Name="/4_ConsoleApp/">
+    <Project Path="PicoWaveAnalyser.ConsoleApp/PicoWaveAnalyser.ConsoleApp.csproj" Id="6051a66c-5d7f-4885-abab-3ffe8dc04aec" />
+  </Folder>
+  <Folder Name="/5_Tests/">
+    <Project Path="PicoWaveAnalyser.Tests/PicoWaveAnalyser.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
 </Solution>
