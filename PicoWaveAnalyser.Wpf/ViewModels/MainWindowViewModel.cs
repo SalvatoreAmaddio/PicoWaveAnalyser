@@ -64,7 +64,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private async Task BrowseAsync()
     {
-        FolderPath = await BrowserDialog.BrowseAsync("Select waveform folder");
+        FolderPath = await BrowserDialog.FolderBrowseAsync("Select waveform folder");
     }
 
     [RelayCommand(CanExecute = nameof(CanAnalysis))]

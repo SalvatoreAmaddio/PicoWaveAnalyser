@@ -6,7 +6,7 @@ namespace PicoWaveAnalyser.Wpf.Services;
 
 internal sealed class BrowserDialog : IBrowserDialog
 {
-    public Task<string> BrowseAsync(string description)
+    public Task<string> FolderBrowseAsync(string description)
     {
         using FolderBrowserDialog dialog = new Forms.FolderBrowserDialog 
         { 

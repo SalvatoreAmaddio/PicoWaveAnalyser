@@ -2,6 +2,6 @@
 
 public interface IBrowserDialog
 {
-    Task<string> BrowseAsync(string description);
+    Task<string> FolderBrowseAsync(string description);
     Task<string> OpenSaveDialog(string filter, string fileName, string defaultExt);
 }
