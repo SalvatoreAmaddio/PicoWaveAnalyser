@@ -19,7 +19,7 @@
         <Style TargetType="Button">
             <Setter Property="Padding"  Value="18,7"/>
         </Style>
-        
+
         <Style TargetType="TextBlock" x:Key="Placeholder">
             <Setter Property="FontStyle" Value="Italic"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -28,7 +28,7 @@
             <Setter Property="AllowDrop" Value="True"/>
             <Setter Property="Text" Value="(You can drag and drop the folder here)"/>
         </Style>
-        
+
         <Style TargetType="TextBox" x:Key="FolderPath">
             <Setter Property="Width" Value="500"/>
             <Setter Property="AllowDrop" Value="True"/>
