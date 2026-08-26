@@ -47,12 +47,23 @@ public sealed partial class MainWindowViewModel : ObservableObject
     {
         CancelAnalysisCommand.NotifyCanExecuteChanged();
         ExportCommand.NotifyCanExecuteChanged();
+
+        if (value) 
+        {
+            Status = "Analysing...";
+        }
     }
 
     [RelayCommand]
     private async Task BrowseAsync()
     {
         FolderPath = await BrowserDialog.BrowseAsync("Select waveform folder");
+        AnalyseCommand.NotifyCanExecuteChanged();
+    }
+
+    public void SetFolder(string path) 
+    {
+        FolderPath=path;
         AnalyseCommand.NotifyCanExecuteChanged();
     }
 

@@ -18,9 +18,9 @@
         <Style TargetType="Button">
             <Setter Property="Padding"  Value="18,7"/>
         </Style>
-        
+
     </Window.Resources>
-    
+
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -32,13 +32,26 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            
-            <TextBlock Text="Waveform folder:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-            <TextBox Grid.Column="1" Text="{Binding FolderPath}" IsReadOnly="True" Padding="6"/>
-            <Button Grid.Column="2" Content="Browse..." IsEnabled="{Binding IsAnalysing, Converter={StaticResource InvertBooleanConverter}}" Command="{Binding BrowseCommand}" Margin="10,0,0,0"/>
+
+            <StackPanel Margin="0,0,10,0">
+                <TextBlock Text="Waveform folder:" VerticalAlignment="Center"/>
+                <TextBlock Text="(You can drag and drop it)" FontSize="10" VerticalAlignment="Center" Grid.Row="1"/>
+            </StackPanel>
+
+            <TextBox Grid.Column="1" 
+                     Width="500" 
+                     Text="{Binding FolderPath}" 
+                     AllowDrop="True"
+                     PreviewDragOver="Folder_DragOver"
+                     Drop="Folder_Drop"
+                     ToolTip="Browse or drag a waveform folder here"
+                     IsReadOnly="True" 
+                     Padding="6"/>
+
+            <Button Grid.Column="2" Content="Browse" IsEnabled="{Binding IsAnalysing, Converter={StaticResource InvertBooleanConverter}}" Command="{Binding BrowseCommand}" Margin="10,0,0,0"/>
         </Grid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,15,0,15">
