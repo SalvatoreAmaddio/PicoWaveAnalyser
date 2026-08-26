@@ -80,8 +80,6 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
             ConcurrentBag<FrequencyResult> calculated = new();
 
-            int completed = 0;
-
             _analysisCts = new CancellationTokenSource();
 
             ParallelOptions options = new()
@@ -97,8 +95,6 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 double frequency = Analyser.FindDominantFrequency(waveform);
 
                 calculated.Add(new FrequencyResult(Path.GetFileName(file), frequency));
-
-                int current = Interlocked.Increment(ref completed);
             });
 
             foreach (FrequencyResult result in calculated.OrderBy(wave => wave.FrequencyHz))

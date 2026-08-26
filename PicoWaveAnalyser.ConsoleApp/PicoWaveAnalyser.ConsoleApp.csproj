@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PicoWaveAnalyser.Application\PicoWaveAnalyser.Application.csproj" />
+  </ItemGroup>
+
 </Project>

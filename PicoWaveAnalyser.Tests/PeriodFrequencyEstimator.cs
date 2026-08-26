@@ -23,21 +23,12 @@ public static class PeriodFrequencyEstimator
 
             if (previous <= 0 && current > 0)
             {
-                double crossingTime = InterpolateCrossing(
-                    times[i - 1],
-                    times[i],
-                    previous,
-                    current);
-
+                double crossingTime = InterpolateCrossing(times[i - 1], times[i], previous, current);
                 risingCrossings.Add(crossingTime);
             }
             else if (previous >= 0 && current < 0)
             {
-                double crossingTime = InterpolateCrossing(
-                    times[i - 1],
-                    times[i],
-                    previous,
-                    current);
+                double crossingTime = InterpolateCrossing(times[i - 1], times[i], previous, current);
 
                 fallingCrossings.Add(crossingTime);
             }
@@ -49,34 +40,23 @@ public static class PeriodFrequencyEstimator
         if (fallingCrossings.Count >= 2)
             return CalculateFrequency(fallingCrossings);
 
-        throw new InvalidOperationException(
-            "Not enough repeated crossings to estimate frequency.");
+        throw new InvalidOperationException("Not enough repeated crossings to estimate frequency.");
     }
 
-    private static double InterpolateCrossing(
-        double previousTime,
-        double currentTime,
-        double previousValue,
-        double currentValue)
+    private static double InterpolateCrossing(double previousTime, double currentTime, double previousValue, double currentValue)
     {
-        double fraction =
-            -previousValue / (currentValue - previousValue);
+        double fraction = -previousValue / (currentValue - previousValue);
 
-        return previousTime +
-               fraction * (currentTime - previousTime);
+        return previousTime + fraction * (currentTime - previousTime);
     }
 
-    private static double CalculateFrequency(
-        List<double> crossings)
+    private static double CalculateFrequency(List<double> crossings)
     {
-        double duration =
-            crossings[^1] - crossings[0];
+        double duration = crossings[^1] - crossings[0];
 
-        int periodCount =
-            crossings.Count - 1;
+        int periodCount = crossings.Count - 1;
 
-        double averagePeriod =
-            duration / periodCount;
+        double averagePeriod = duration / periodCount;
 
         return 1.0 / averagePeriod;
     }

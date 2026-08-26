@@ -40,10 +40,8 @@ public class FrequencyAnalyserTests
         FourierTransformer transformer = new FourierTransformer();
         FrequencyAnalyser analyser = new FrequencyAnalyser(transformer);
 
-        // Act
         double actualFrequency = analyser.FindDominantFrequency(waveform);
 
-        // Assert
         Assert.InRange(actualFrequency, 99.5, 100.5);
     }
 
@@ -163,8 +161,7 @@ public class FrequencyAnalyserTests
 
             times[i] = time;
 
-            volts[i] = Math.Sin(
-                2.0 * Math.PI * expectedFrequency * time);
+            volts[i] = Math.Sin(2.0 * Math.PI * expectedFrequency * time);
         }
 
         Waveform waveform = new(times, volts);
@@ -224,30 +221,26 @@ public class FrequencyAnalyserTests
 
             times[i] = time;
 
-            double signal =
-                Math.Sin(2.0 * Math.PI * expectedFrequency * time);
+            double signal = Math.Sin(2.0 * Math.PI * expectedFrequency * time);
 
-            double noise =
-                (random.NextDouble() - 0.5) * 0.2;
+            double noise = (random.NextDouble() - 0.5) * 0.2;
 
             volts[i] = signal + noise;
         }
 
         Waveform waveform = new(times, volts);
 
-        FrequencyAnalyser analyser =
-            new(new FourierTransformer());
+        FrequencyAnalyser analyser = new(new FourierTransformer());
 
-        double actualFrequency =
-            analyser.FindDominantFrequency(waveform);
+        double actualFrequency = analyser.FindDominantFrequency(waveform);
 
         Assert.InRange(actualFrequency, 99.0, 101.0);
     }
 
     [Theory]
     [InlineData("Wave280.csv")]
- //   [InlineData("Wave228.csv")]
-//    [InlineData("Wave209.csv")]
+    [InlineData("Wave228.csv")]
+    [InlineData("Wave209.csv")]
     public async Task CompareFrequencyEstimators(string fileName)
     {
         WaveformReader reader = new();
@@ -271,47 +264,38 @@ public class FrequencyAnalyserTests
     {
         WaveformReader reader = new();
 
-        Waveform waveform = await reader.ReadAsync(
-            $@"C:\Users\salva\Downloads\interviewTest\{waveformName}.csv");
+        Waveform waveform = await reader.ReadAsync($@"C:\Users\salva\Downloads\interviewTest\{waveformName}.csv");
 
         FourierTransformer transformer = new();
 
         Complex[] spectrum = transformer.Transform(waveform.Volts);
 
-        double recordingDuration =
-            waveform.Times[^1] - waveform.Times[0];
+        double recordingDuration = waveform.Times[^1] - waveform.Times[0];
 
-        double sampleInterval =
-            recordingDuration / (waveform.Times.Length - 1);
+        double sampleInterval = recordingDuration / (waveform.Times.Length - 1);
 
-        double sampleRate =
-            1.0 / sampleInterval;
+        double sampleRate = 1.0 / sampleInterval;
 
-        var strongestBins = spectrum
-            .Take(spectrum.Length / 2)
-            .Select((value, bin) => new
-            {
-                Bin = bin,
-                Magnitude = value.Magnitude
-            })
-            .Where(x => x.Bin > 0)
-            .OrderByDescending(x => x.Magnitude)
-            .Take(10)
-            .Select(x => new
-            {
-                x.Bin,
-                Frequency =
-                    x.Bin * sampleRate / spectrum.Length,
-                x.Magnitude
-            })
-            .ToList();
+        var strongestBins = spectrum.Take(spectrum.Length / 2)
+                                    .Select((value, bin) => new
+                                    {
+                                        Bin = bin,
+                                        Magnitude = value.Magnitude
+                                    })
+                                    .Where(x => x.Bin > 0)
+                                    .OrderByDescending(x => x.Magnitude)
+                                    .Take(10)
+                                    .Select(x => new
+                                    {
+                                        x.Bin,
+                                        Frequency = x.Bin * sampleRate / spectrum.Length,
+                                        x.Magnitude
+                                    })
+                                    .ToList();
 
         foreach (var result in strongestBins)
         {
-            _output.WriteLine(
-                $"Bin: {result.Bin,4} | " +
-                $"Frequency: {result.Frequency,12:F2} Hz | " +
-                $"Magnitude: {result.Magnitude:F2}");
+            _output.WriteLine($"Bin: {result.Bin,4} | " + $"Frequency: {result.Frequency,12:F2} Hz | " + $"Magnitude: {result.Magnitude:F2}");
         }
     }
 }
