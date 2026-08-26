@@ -8,8 +8,8 @@ internal sealed class BrowserDialog : IBrowserDialog
 {
     public Task<string> FolderBrowseAsync(string description)
     {
-        using FolderBrowserDialog dialog = new Forms.FolderBrowserDialog 
-        { 
+        using FolderBrowserDialog dialog = new Forms.FolderBrowserDialog
+        {
             Description = description,
             SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
         };
@@ -19,7 +19,7 @@ internal sealed class BrowserDialog : IBrowserDialog
         return Task.FromResult(selectedPath);
     }
 
-    public Task<string> OpenSaveDialog(string filter, string fileName, string defaultExt) 
+    public Task<string> OpenSaveDialog(string filter, string fileName, string defaultExt)
     {
         SaveFileDialog dialog = new SaveFileDialog
         {
