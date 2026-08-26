@@ -24,6 +24,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     #region Properties
     [ObservableProperty] private bool isAnalysing = false;
+    [ObservableProperty] private bool isFolderSet = false;
     [ObservableProperty] private string folderPath = string.Empty;
     [ObservableProperty] private string status = "Choose the folder containing the waveform CSV files.";
     #endregion
@@ -48,23 +49,22 @@ public sealed partial class MainWindowViewModel : ObservableObject
         CancelAnalysisCommand.NotifyCanExecuteChanged();
         ExportCommand.NotifyCanExecuteChanged();
 
-        if (value) 
+        if (value)
         {
             Status = "Analysing...";
         }
+    }
+
+    partial void OnFolderPathChanged(string value)
+    {
+        IsFolderSet = !string.IsNullOrEmpty(value);
+        AnalyseCommand.NotifyCanExecuteChanged();
     }
 
     [RelayCommand]
     private async Task BrowseAsync()
     {
         FolderPath = await BrowserDialog.BrowseAsync("Select waveform folder");
-        AnalyseCommand.NotifyCanExecuteChanged();
-    }
-
-    public void SetFolder(string path) 
-    {
-        FolderPath=path;
-        AnalyseCommand.NotifyCanExecuteChanged();
     }
 
     [RelayCommand(CanExecute = nameof(CanAnalysis))]

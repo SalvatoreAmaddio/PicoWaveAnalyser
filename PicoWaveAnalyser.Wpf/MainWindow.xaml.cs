@@ -19,11 +19,9 @@ public partial class MainWindow : Window
     {
         if (e.Data.GetDataPresent(DataFormats.FileDrop))
         {
-            string[] paths =
-                (string[])e.Data.GetData(DataFormats.FileDrop);
+            string[] paths = (string[])e.Data.GetData(DataFormats.FileDrop);
 
-            if (paths.Length == 1 &&
-                Directory.Exists(paths[0]))
+            if (paths.Length == 1 && Directory.Exists(paths[0]))
             {
                 e.Effects = DragDropEffects.Copy;
                 e.Handled = true;
@@ -40,16 +38,14 @@ public partial class MainWindow : Window
         if (!e.Data.GetDataPresent(DataFormats.FileDrop))
             return;
 
-        string[] paths =
-            (string[])e.Data.GetData(DataFormats.FileDrop);
+        string[] paths = (string[])e.Data.GetData(DataFormats.FileDrop);
 
-        if (paths.Length != 1 ||
-            !Directory.Exists(paths[0]))
+        if (paths.Length != 1 || !Directory.Exists(paths[0]))
             return;
 
         if (DataContext is MainWindowViewModel viewModel)
         {
-            viewModel.SetFolder(paths[0]);
+            viewModel.FolderPath = paths[0];
         }
     }
 }

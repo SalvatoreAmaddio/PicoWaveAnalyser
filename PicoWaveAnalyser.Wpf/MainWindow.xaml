@@ -14,9 +14,27 @@
 
     <Window.Resources>
         <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
+        <converters:FolderSetVisibilityConverter x:Key="FolderSetVisibilityConverter"/>
 
         <Style TargetType="Button">
             <Setter Property="Padding"  Value="18,7"/>
+        </Style>
+        
+        <Style TargetType="TextBlock" x:Key="Placeholder">
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5,0,0,2"/>
+            <Setter Property="Foreground" Value="Gray"/>
+            <Setter Property="AllowDrop" Value="True"/>
+            <Setter Property="Text" Value="(You can drag and drop the folder here)"/>
+        </Style>
+        
+        <Style TargetType="TextBox" x:Key="FolderPath">
+            <Setter Property="Width" Value="500"/>
+            <Setter Property="AllowDrop" Value="True"/>
+            <Setter Property="ToolTip" Value="Browse or drag a waveform folder here"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="Padding" Value="6"/>
         </Style>
 
     </Window.Resources>
@@ -36,20 +54,19 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Margin="0,0,10,0">
-                <TextBlock Text="Waveform folder:" VerticalAlignment="Center"/>
-                <TextBlock Text="(You can drag and drop it)" FontSize="10" VerticalAlignment="Center" Grid.Row="1"/>
-            </StackPanel>
+            <TextBlock Text="Waveform folder:" VerticalAlignment="Center" Margin="0,0,10,0"/>
 
             <TextBox Grid.Column="1" 
-                     Width="500" 
                      Text="{Binding FolderPath}" 
-                     AllowDrop="True"
+                     Style="{StaticResource FolderPath}"
                      PreviewDragOver="Folder_DragOver"
-                     Drop="Folder_Drop"
-                     ToolTip="Browse or drag a waveform folder here"
-                     IsReadOnly="True" 
-                     Padding="6"/>
+                     Drop="Folder_Drop"/>
+
+            <TextBlock Grid.Column="1" 
+                       Visibility="{Binding IsFolderSet, Converter={StaticResource FolderSetVisibilityConverter}}" 
+                       PreviewDragOver="Folder_DragOver"
+                       Drop="Folder_Drop"
+                       Style="{StaticResource Placeholder}"/>
 
             <Button Grid.Column="2" Content="Browse" IsEnabled="{Binding IsAnalysing, Converter={StaticResource InvertBooleanConverter}}" Command="{Binding BrowseCommand}" Margin="10,0,0,0"/>
         </Grid>
