@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="PicoWaveAnalyser.Application/PicoWaveAnalyser.Application.csproj" />
+  <Project Path="PicoWaveAnalyser.Domain/PicoWaveAnalyser.Domain.csproj" />
+  <Project Path="PicoWaveAnalyser.Tests/PicoWaveAnalyser.Tests.csproj" />
+  <Project Path="PicoWaveAnalyser.Wpf/PicoWaveAnalyser.Wpf.csproj" />
+</Solution>
