@@ -15,6 +15,12 @@
         MinHeight="450" MinWidth="700">
 
     <Window.Resources>
+
+        <SolidColorBrush Color="Gold" x:Key="Browse"/>
+        <SolidColorBrush Color="Green" x:Key="Play"/>
+        <SolidColorBrush Color="Crimson" x:Key="Cancel"/>
+        <SolidColorBrush Color="#4CAF50" x:Key="ProgressForeground"/>
+
         <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
 
         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
@@ -61,7 +67,7 @@
                     Margin="10,0,0,0">
 
                 <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="FolderOpen" Margin="0,0,6,0" Foreground="Gold"/>
+                    <materialDesign:PackIcon Kind="FolderOpen" Margin="0,0,6,0" Foreground="{StaticResource Browse}"/>
                     <TextBlock Text="Browse"/>
                 </StackPanel>
             </Button>
@@ -70,14 +76,14 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,15,0,15">
             <Button Command="{Binding AnalyseCommand}">
                 <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Play" Foreground="Green" Margin="0,0,6,0"/>
+                    <materialDesign:PackIcon Kind="Play" Foreground="{StaticResource Play}" Margin="0,0,6,0"/>
                     <TextBlock Text="Analyse" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
 
             <Button Command="{Binding CancelAnalysisCommand}" Margin="10,0,0,0">
                 <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Cancel" Margin="0,0,6,0" Foreground="Crimson"/>
+                    <materialDesign:PackIcon Kind="Cancel" Margin="0,0,6,0" Foreground="{StaticResource Cancel}"/>
                     <TextBlock Text="Cancel" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
@@ -114,6 +120,6 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <ProgressBar Grid.Row="3" Height="6" IsIndeterminate="{Binding IsAnalysing}" Foreground="#4CAF50" Background="Transparent" BorderThickness="0"/>
+        <ProgressBar Grid.Row="3" Height="6" IsIndeterminate="{Binding IsAnalysing}" Foreground="{StaticResource ProgressForeground}" Background="Transparent" BorderThickness="0"/>
     </Grid>
 </Window>
