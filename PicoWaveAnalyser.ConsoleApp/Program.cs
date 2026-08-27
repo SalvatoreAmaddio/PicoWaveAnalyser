@@ -64,13 +64,13 @@ public class Program
 
             int completed = 0;
 
-            await Parallel.ForEachAsync(files, options, async (file, cancellationToken) =>
+            await Parallel.ForEachAsync(files, options, async (path, cancellationToken) =>
             {
-                Waveform waveform = await reader.ReadAsync(file, cancellationToken);
+                Waveform waveform = await reader.ReadAsync(path, cancellationToken);
 
                 double frequency = analyser.FindDominantFrequency(waveform);
 
-                results.Add(new FrequencyResult(Path.GetFileName(file), frequency, file));
+                results.Add(new FrequencyResult(Path.GetFileName(path), frequency, path));
 
                 lock (progressLock)
                 {
