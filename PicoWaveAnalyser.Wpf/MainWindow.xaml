@@ -12,7 +12,7 @@
         Style="{StaticResource MaterialDesignWindow}"
         Title="Pico Waveform Analyser" 
         Height="600" Width="900"
-        MinHeight="450" MinWidth="700">
+        MinHeight="450" MinWidth="600">
 
     <Window.Resources>
 
@@ -23,13 +23,6 @@
 
         <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
 
-        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="Padding" Value="15,0"/>
-            <Setter Property="BorderBrush" Value="Black"/>
-            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
-            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-        </Style>
-        
         <Style TargetType="TextBox" x:Key="FolderPath" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Width" Value="440"/>
@@ -101,14 +94,13 @@
         <DataGrid Grid.Row="2" ItemsSource="{Binding Results}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Filename" Binding="{Binding FileName}" Width="220"/>
-                <DataGridTextColumn Header="Frequency (Hz)" Binding="{Binding FrequencyHz, StringFormat=F2}" Width="220"/>
+                <DataGridTextColumn Header="Frequency (Hz)" Binding="{Binding FrequencyHz, StringFormat=F2}" Width="125"/>
 
-                <DataGridTemplateColumn Header="Action" Width="Auto">
+                <DataGridTemplateColumn Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Padding="10,3" Command="{Binding DataContext.OpenWaveformCommand,
-                                                                     RelativeSource={RelativeSource AncestorType=Window}}"
-                                                   CommandParameter="{Binding FilePath}">
+                            <Button Command="{Binding DataContext.OpenWaveformCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding FilePath}">
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="OpenInNew" Margin="0,0,6,0"/>
                                     <TextBlock Text="Open"/>
