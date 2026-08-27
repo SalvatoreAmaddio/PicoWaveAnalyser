@@ -70,7 +70,7 @@ public class Program
 
                 double frequency = analyser.FindDominantFrequency(waveform);
 
-                results.Add(new FrequencyResult(Path.GetFileName(file), frequency));
+                results.Add(new FrequencyResult(Path.GetFileName(file), frequency, file));
 
                 lock (progressLock)
                 {
