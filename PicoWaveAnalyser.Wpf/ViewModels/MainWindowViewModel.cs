@@ -25,7 +25,6 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     #region Properties
     [ObservableProperty] private bool isAnalysing = false;
-    [ObservableProperty] private bool isFolderSet = false;
     [ObservableProperty] private string folderPath = string.Empty;
     [ObservableProperty] private string status = "Choose the folder containing the waveform CSV files.";
     #endregion
@@ -58,7 +57,6 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     partial void OnFolderPathChanged(string value)
     {
-        IsFolderSet = !string.IsNullOrEmpty(value);
         AnalyseCommand.NotifyCanExecuteChanged();
     }
 
