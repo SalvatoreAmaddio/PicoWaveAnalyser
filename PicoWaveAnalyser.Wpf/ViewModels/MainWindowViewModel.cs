@@ -26,7 +26,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     #region Properties
     [ObservableProperty] private bool isAnalysing = false;
     [ObservableProperty] private string folderPath = string.Empty;
-    [ObservableProperty] private string status = "Choose the folder containing the waveform CSV files.";
+    [ObservableProperty] private string status = string.Empty;
     #endregion
 
     public ObservableCollection<FrequencyResult> Results { get; } = [];

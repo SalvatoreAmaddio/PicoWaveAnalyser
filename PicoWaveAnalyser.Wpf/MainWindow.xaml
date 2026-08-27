@@ -32,7 +32,7 @@
         
         <Style TargetType="TextBox" x:Key="FolderPath" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Width" Value="500"/>
+            <Setter Property="Width" Value="440"/>
             <Setter Property="AllowDrop" Value="True"/>
             <Setter Property="IsReadOnly" Value="True"/>
             <Setter Property="Padding" Value="6"/>
@@ -40,7 +40,7 @@
 
     </Window.Resources>
 
-    <Grid Margin="20">
+    <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -53,9 +53,9 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-
+            
             <TextBox Style="{StaticResource FolderPath}"
-                     materialDesign:HintAssist.Hint="(You can drag and drop the folder here)"
+                     materialDesign:HintAssist.Hint="Choose a folder containing waveform CSV files, or drag and drop it here"
                      materialDesign:HintAssist.HelperText="Waveform folder"
                      Text="{Binding FolderPath}" 
                      PreviewDragOver="Folder_DragOver"
