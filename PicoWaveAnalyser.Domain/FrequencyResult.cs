@@ -1,3 +1,3 @@
 ﻿namespace PicoWaveAnalyser.Domain;
 
-public sealed record FrequencyResult(string FileName, double FrequencyHz);
+public sealed record FrequencyResult(string FileName, double FrequencyHz, string FilePath);

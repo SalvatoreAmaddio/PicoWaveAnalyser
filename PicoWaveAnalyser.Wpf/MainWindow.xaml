@@ -82,6 +82,18 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Filename" Binding="{Binding FileName}" Width="220"/>
                 <DataGridTextColumn Header="Frequency (Hz)" Binding="{Binding FrequencyHz, StringFormat=F2}" Width="220"/>
+
+                <DataGridTemplateColumn Header="Action" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Open"
+                                    Padding="10,3"
+                                    Command="{Binding DataContext.OpenWaveformCommand,
+                                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding FilePath}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
 

@@ -6,6 +6,7 @@ using PicoWaveAnalyser.Application.Services.IO;
 using PicoWaveAnalyser.Domain;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 
 namespace PicoWaveAnalyser.Wpf.ViewModels;
@@ -105,7 +106,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
                 double frequency = Analyser.FindDominantFrequency(waveform);
 
-                calculated.Add(new FrequencyResult(Path.GetFileName(path), frequency));
+                calculated.Add(new FrequencyResult(Path.GetFileName(path), frequency, path));
             });
 
             foreach (FrequencyResult result in calculated.OrderBy(wave => wave.FrequencyHz))
@@ -136,6 +137,28 @@ public sealed partial class MainWindowViewModel : ObservableObject
     private void CancelAnalysis()
     {
         _analysisCts?.Cancel();
+    }
+
+    [RelayCommand]
+    private async Task OpenWaveform(string path)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            {
+                throw new Exception("Path null or file does not exit");
+            }
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = path,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            await DialogMessageService.DisplayErrorAsync(ex.Message, "Couldn't open the file");
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanExportAnalysis))]
