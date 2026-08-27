@@ -99,13 +99,13 @@ public sealed partial class MainWindowViewModel : ObservableObject
                 CancellationToken = _analysisCts.Token
             };
 
-            await Parallel.ForEachAsync(files, options, async (file, cancellationToken) =>
+            await Parallel.ForEachAsync(files, options, async (path, cancellationToken) =>
             {
-                Waveform waveform = await Reader.ReadAsync(file, cancellationToken);
+                Waveform waveform = await Reader.ReadAsync(path, cancellationToken);
 
                 double frequency = Analyser.FindDominantFrequency(waveform);
 
-                calculated.Add(new FrequencyResult(Path.GetFileName(file), frequency));
+                calculated.Add(new FrequencyResult(Path.GetFileName(path), frequency));
             });
 
             foreach (FrequencyResult result in calculated.OrderBy(wave => wave.FrequencyHz))
@@ -143,7 +143,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     {
         if (Results.Count == 0)
         {
-            await DialogMessageService.DisplayErrorAsync("You did not run any analyses", "Export error");
+            await DialogMessageService.DisplayErrorAsync("Please run the analysis before exporting the results.", "Export error");
             return;
         }
 

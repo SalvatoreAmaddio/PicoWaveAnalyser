@@ -6,16 +6,21 @@ namespace PicoWaveAnalyser.Application.Services.Analyses;
 public sealed class FourierTransformer : ITransformer
 {
     /// <summary>
-    /// Performs a Fourier transform on the supplied voltage samples.
+    /// Computes the frequency spectrum of the supplied voltage samples.
     /// </summary>
     /// <remarks>
-    /// The mean is removed to eliminate the DC offset and a Hann window is
-    /// applied to reduce spectral leakage.
+    /// The mean is removed before the transform to reduce the DC component.
+    /// A Hann window is then applied to reduce spectral leakage when the
+    /// captured signal does not contain an exact integer number of cycles.
     ///
-    /// The signal is zero-padded to the next power of two before the FFT.
-    /// Math.NET does not require a power-of-two input size, but the additional
-    /// FFT points provide a more densely sampled spectrum for subsequent
-    /// peak interpolation.
+    /// The windowed signal is zero-padded to the next power of two before
+    /// performing the FFT. Math.NET does not require a power-of-two input,
+    /// but zero-padding provides a more densely sampled representation of
+    /// the spectrum, which is useful when estimating the location of a
+    /// spectral peak between FFT bins.
+    ///
+    /// Zero-padding does not increase the underlying frequency resolution
+    /// of the captured signal or add information to the recording.
     /// </remarks>
     public Complex[] Transform(double[] samples)
     {
@@ -34,10 +39,9 @@ public sealed class FourierTransformer : ITransformer
         {
             double centredSample = samples[i] - mean;
 
-            //Hann window
-            double window = 0.5 * (1.0 - Math.Cos(2.0 * Math.PI * i / (samples.Length - 1)));
+            double hannWindow = 0.5 * (1.0 - Math.Cos(2.0 * Math.PI * i / (samples.Length - 1)));
 
-            spectrum[i] = new Complex(centredSample * window, 0);
+            spectrum[i] = new Complex(centredSample * hannWindow, 0);
         }
 
         Fourier.Forward(spectrum, FourierOptions.Matlab);
@@ -46,12 +50,14 @@ public sealed class FourierTransformer : ITransformer
     }
 
     /// <summary>
-    /// Returns the FFT size used to zero-pad the signal to the next power of two.
+    /// Determines the FFT size required to zero-pad the supplied number
+    /// of samples to the next power of two.
     /// </summary>
     /// <remarks>
-    /// Math.NET does not require a power-of-two FFT size. The additional zero
-    /// samples provide a more densely sampled frequency spectrum, which helps
-    /// when locating and interpolating the dominant spectral peak.
+    /// Math.NET can transform arbitrary input sizes, so the power-of-two
+    /// size is not required for correctness. Zero-padding is used here to
+    /// obtain more closely spaced FFT samples around the spectral peak,
+    /// which assists the subsequent peak interpolation.
     /// </remarks>
     private static int GetZeroPaddedFftSize(int sampleCount)
     {
