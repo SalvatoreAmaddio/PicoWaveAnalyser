@@ -134,6 +134,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanCancelAnalysis))]
     private void CancelAnalysis()
     {
+        Status = "Stopping...";
         _analysisCts?.Cancel();
     }
 
